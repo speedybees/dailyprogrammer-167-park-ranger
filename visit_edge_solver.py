@@ -22,7 +22,18 @@ class VisitEdgeSolver(object):
                 edges = [edge for sublist in 
                               [vertex.edges for vertex in odd_vertices]
                               for edge in sublist]
-                shortest_edge = min(edges, key=lambda edge: edge.length)
+                # Edges where both vertices in odd sets are effectively
+                # twice as valuable because they change the valence
+                # favorably for two sets, whereas edges with one vertex
+                # not in odd_vertices means that now we have a new odd
+                # vertex.  However, if a path is long enough, we don't
+                # get a break by backtracking it, even though using it
+                # would only change the valence by 1
+                shortest_edge = min(edges, 
+                                    key=lambda edge: edge.length
+                                                     /len([vertex 
+                                                           for vertex 
+                                                           in odd_vertices]))
                 # We don't want to use this edge again, pretend like it 
                 # doesn't exist any more
                 for vertex in shortest_edge.vertices:
